@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 5-Layer Cake — Jensen Huang's Vision</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
+:root {
+  --bg-primary: #06060b;
+  --bg-secondary: #0a0a12;
+  --bg-tertiary: #0e0e18;
+  --gold: #c9a84c;
+  --gold-light: #e8d5a3;
+  --gold-dim: rgba(201,168,76,0.15);
+  --gold-glow: rgba(201,168,76,0.3);
+  --green: #43e97b;
+  --red: #e74c3c;
+  --orange: #f39c12;
+  --blue: #3498db;
+  --purple: #8b5cf6;
+  --cyan: #4ecdc4;
+  --text-primary: #d0d0d0;
+  --text-secondary: #888888;
+  --text-tertiary: #555555;
+  --glass-bg: rgba(255,255,255,0.03);
+  --glass-blur: 20px;
+  --glass-border: rgba(255,255,255,0.06);
+  --border-gold: rgba(201,168,76,0.2);
+  
+  --layer1: #e74c3c;
+  --layer2: #f39c12;
+  --layer3: #3498db;
+  --layer4: #8b5cf6;
+  --layer5: #43e97b;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  padding: 40px;
+}
+
+.container { max-width: 1200px; width: 100%; margin: 0 auto; position: relative; }
+.container::before {
+  content: '';
+  position: absolute;
+  top: -100px; left: 50%;
+  width: 600px; height: 600px;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.viz-header { text-align: center; margin-bottom: 56px; }
+.viz-badge {
+  display: inline-block;
+  padding: 6px 20px;
+  border: 1px solid var(--border-gold);
+  border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 3px;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.viz-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 900;
+  color: white;
+  line-height: 1.2;
+}
+.viz-title .gold { color: var(--gold); }
+.viz-subtitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--text-secondary);
+  margin-top: 8px;
+}
+
+.section { margin-bottom: 56px; }
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  color: var(--gold);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 24px;
+}
+
+/* ===== CAKE STACK ===== */
+.cake-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.cake-layer {
+  display: flex;
+  align-items: stretch;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 1px solid var(--glass-border);
+}
+.cake-layer:hover {
+  transform: scale(1.02);
+  z-index: 2;
+}
+.cake-num {
+  width: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: white;
+  flex-shrink: 0;
+}
+.cake-body {
+  flex: 1;
+  padding: 20px 24px;
+  background: var(--glass-bg);
+}
+.cake-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+}
+.cake-eng {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.cake-desc {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.cake-detail {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease;
+}
+.cake-detail.open {
+  max-height: 400px;
+}
+.cake-detail-inner {
+  padding-top: 12px;
+  border-top: 1px solid var(--glass-border);
+  margin-top: 12px;
+}
+.cake-detail-item {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+.cake-detail-item .emoji { flex-shrink: 0; }
+.cake-kr {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-family: 'JetBrains Mono', monospace;
+  margin-left: 8px;
+}
+
+.l1 { background: rgba(231,76,60,0.15); border-color: rgba(231,76,60,0.3); }
+.l1 .cake-num { background: rgba(231,76,60,0.25); }
+.l1 .cake-eng { color: var(--layer1); }
+.l2 { background: rgba(243,156,18,0.15); border-color: rgba(243,156,18,0.3); }
+.l2 .cake-num { background: rgba(243,156,18,0.25); }
+.l2 .cake-eng { color: var(--layer2); }
+.l3 { background: rgba(52,152,219,0.15); border-color: rgba(52,152,219,0.3); }
+.l3 .cake-num { background: rgba(52,152,219,0.25); }
+.l3 .cake-eng { color: var(--layer3); }
+.l4 { background: rgba(139,92,246,0.15); border-color: rgba(139,92,246,0.3); }
+.l4 .cake-num { background: rgba(139,92,246,0.25); }
+.l4 .cake-eng { color: var(--layer4); }
+.l5 { background: rgba(67,233,123,0.15); border-color: rgba(67,233,123,0.3); }
+.l5 .cake-num { background: rgba(67,233,123,0.25); }
+.l5 .cake-eng { color: var(--layer5); }
+
+/* ===== PARADIGM SHIFT ===== */
+.shift-box {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 24px;
+  align-items: center;
+  margin-bottom: 32px;
+}
+.shift-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+}
+.shift-arrow {
+  font-size: 2rem;
+  color: var(--gold);
+}
+.shift-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 8px;
+}
+.shift-items {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  text-align: left;
+}
+.shift-items div { margin-bottom: 4px; }
+
+/* ===== INVESTMENT MAP ===== */
+.invest-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+.invest-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+.invest-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+.invest-icon { font-size: 2rem; margin-bottom: 8px; }
+.invest-layer {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+}
+.invest-title {
+  font-weight: 500;
+  color: white;
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+}
+.invest-stocks {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.invest-capex {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: var(--gold);
+  margin-top: 8px;
+}
+
+/* ===== JEVONS PARADOX ===== */
+.jevons {
+  background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(67,233,123,0.05));
+  border: 1px solid rgba(139,92,246,0.2);
+  border-radius: 12px;
+  padding: 32px;
+  margin-bottom: 32px;
+}
+.jevons-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: white;
+  margin-bottom: 16px;
+}
+.jevons-flow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.jevons-step {
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-align: center;
+}
+.jevons-arrow { color: var(--gold); font-size: 1.2rem; }
+
+/* ===== DATA CENTER = NEW LOGISTICS ===== */
+.dc-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.dc-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.dc-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.dc-era {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+.dc-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 12px;
+}
+.dc-item {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+/* ===== INSIGHT BOX ===== */
+.insight-box {
+  background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.02));
+  border: 1px solid var(--border-gold);
+  border-radius: 12px;
+  padding: 28px 32px;
+  margin-top: 32px;
+}
+.insight-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+}
+.insight-text {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  line-height: 1.8;
+}
+
+/* ===== QUOTE ===== */
+.quote-box {
+  text-align: center;
+  padding: 40px;
+  margin: 40px 0;
+}
+.quote-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  font-style: italic;
+  color: var(--gold-light);
+  line-height: 1.6;
+}
+.quote-author {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--text-tertiary);
+  letter-spacing: 3px;
+  margin-top: 12px;
+}
+
+.watermark {
+  text-align: center;
+  margin-top: 48px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.5rem;
+  color: var(--text-tertiary);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+/* ═══════════ LIGHT THEME ═══════════ */
+[data-theme="light"] {
+  --bg-primary: #f8f7f4;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f0eeea;
+  --gold: #9a7b2d;
+  --gold-light: #c9a84c;
+  --gold-dim: rgba(154,123,45,0.1);
+  --gold-glow: rgba(154,123,45,0.15);
+  --green: #2d8a4e;
+  --red: #c0392b;
+  --orange: #d4820a;
+  --blue: #2471a3;
+  --purple: #6c3ec4;
+  --cyan: #2a9d8f;
+  --text-primary: #1a1a1a;
+  --text-secondary: #555555;
+  --text-tertiary: #999999;
+  --glass-bg: rgba(255,255,255,0.7);
+  --glass-border: rgba(0,0,0,0.08);
+  --border-gold: rgba(154,123,45,0.25);
+  --layer1: #c0392b;
+  --layer2: #d4820a;
+  --layer3: #2471a3;
+  --layer4: #6c3ec4;
+  --layer5: #2d8a4e;
+}
+[data-theme="light"] body { background: var(--bg-primary); }
+[data-theme="light"] .viz-title, [data-theme="light"] .section-title,
+[data-theme="light"] .cake-name, [data-theme="light"] .shift-title,
+[data-theme="light"] .invest-title, [data-theme="light"] .jevons-title,
+[data-theme="light"] .dc-title { color: #1a1a1a; }
+[data-theme="light"] .cake-layer, [data-theme="light"] .invest-card,
+[data-theme="light"] .shift-card, [data-theme="light"] .dc-card {
+  background: var(--bg-secondary);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  backdrop-filter: none;
+}
+[data-theme="light"] .cake-body { background: rgba(255,255,255,0.5); }
+[data-theme="light"] .container::before {
+  background: radial-gradient(circle, rgba(154,123,45,0.04) 0%, transparent 70%);
+}
+[data-theme="light"] .l1 { background: rgba(192,57,43,0.06); }
+[data-theme="light"] .l1 .cake-num { background: rgba(192,57,43,0.12); }
+[data-theme="light"] .l2 { background: rgba(212,130,10,0.06); }
+[data-theme="light"] .l2 .cake-num { background: rgba(212,130,10,0.12); }
+[data-theme="light"] .l3 { background: rgba(36,113,163,0.06); }
+[data-theme="light"] .l3 .cake-num { background: rgba(36,113,163,0.12); }
+[data-theme="light"] .l4 { background: rgba(108,62,196,0.06); }
+[data-theme="light"] .l4 .cake-num { background: rgba(108,62,196,0.12); }
+[data-theme="light"] .l5 { background: rgba(45,138,78,0.06); }
+[data-theme="light"] .l5 .cake-num { background: rgba(45,138,78,0.12); }
+[data-theme="light"] .jevons {
+  background: linear-gradient(135deg, rgba(108,62,196,0.04), rgba(45,138,78,0.03));
+}
+
+.theme-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--gold);
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 100;
+  transition: all 0.3s;
+}
+.theme-toggle:hover {
+  border-color: var(--border-gold);
+  box-shadow: 0 0 12px rgba(201,168,76,0.2);
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="viz-header">
+    <div class="viz-badge">NVIDIA · JENSEN HUANG · AI INFRASTRUCTURE</div>
+    <h1 class="viz-title">AI는 <span class="gold">5가지 레이어의 케이크</span>다</h1>
+    <p class="viz-subtitle">"AI is not software. It's infrastructure — like electricity, like the internet."</p>
+  </div>
+
+  <!-- SECTION 1: PARADIGM SHIFT -->
+  <div class="section">
+    <div class="section-label">PARADIGM SHIFT</div>
+    <div class="section-title">컴퓨팅의 패러다임이 바뀌었다</div>
+    <div class="shift-box">
+      <div class="shift-card">
+        <div class="shift-title" style="color:var(--text-secondary)">기존 컴퓨팅</div>
+        <div class="shift-items">
+          <div>📝 사전 작성된 알고리즘 실행</div>
+          <div>📊 정형 데이터만 처리</div>
+          <div>⚙️ 규칙 기반 (if-then-else)</div>
+          <div>📉 확장 = 더 많은 서버</div>
+        </div>
+      </div>
+      <div class="shift-arrow">→</div>
+      <div class="shift-card" style="border-color:var(--border-gold)">
+        <div class="shift-title" style="color:var(--gold)">AI 컴퓨팅</div>
+        <div class="shift-items">
+          <div>🧠 실시간 지능 생성</div>
+          <div>🌊 비정형 데이터 이해</div>
+          <div>💡 학습 기반 추론</div>
+          <div>⚡ 확장 = 더 많은 에너지</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: THE 5-LAYER CAKE -->
+  <div class="section">
+    <div class="section-label">THE 5-LAYER STACK</div>
+    <div class="section-title">AI 산업의 5개 레이어</div>
+    <p style="text-align:center;font-size:0.75rem;color:var(--text-secondary);margin-bottom:24px">▼ 각 레이어를 클릭하면 상세 내용이 펼쳐집니다</p>
+    
+    <div class="cake-stack">
+      <!-- Layer 5: Applications (top) -->
+      <div class="cake-layer l5" onclick="toggleCake(this)">
+        <div class="cake-num">5</div>
+        <div class="cake-body">
+          <div class="cake-eng" style="color:var(--layer5)">APPLICATIONS — 경제적 가치 창출</div>
+          <div class="cake-name">🚀 Applications</div>
+          <div class="cake-desc">최상단에서 실제 경제적 가치가 만들어진다 — 자율주행, 로봇, 신약, 코드 생성</div>
+          <div class="cake-detail">
+            <div class="cake-detail-inner">
+              <div class="cake-detail-item"><span class="emoji">🚗</span> 자율주행: L4+ 시장 2030년 $2,000억 전망</div>
+              <div class="cake-detail-item"><span class="emoji">🤖</span> 로봇: 인간형 로봇 시장 2035년 $380억</div>
+              <div class="cake-detail-item"><span class="emoji">💊</span> 신약: AI 신약개발 임상 성공률 2배 ↑</div>
+              <div class="cake-detail-item"><span class="emoji">💻</span> 코딩: GitHub Copilot 이미 개발 생산성 55% ↑</div>
+              <div class="cake-detail-item"><span class="emoji">🇰🇷</span> 한국: 현대차(자율주행), 한화(로봇), 삼성바이오(신약)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Layer 4: Models -->
+      <div class="cake-layer l4" onclick="toggleCake(this)">
+        <div class="cake-num">4</div>
+        <div class="cake-body">
+          <div class="cake-eng" style="color:var(--layer4)">MODELS — 범용 지능 레이어</div>
+          <div class="cake-name">🧠 Models</div>
+          <div class="cake-desc">언어뿐 아니라 생물학, 화학, 물리, 로보틱스를 이해하는 범용 지능</div>
+          <div class="cake-detail">
+            <div class="cake-detail-inner">
+              <div class="cake-detail-item"><span class="emoji">🏢</span> 빅테크: GPT-5, Claude 4.6, Gemini 3 — 3파전</div>
+              <div class="cake-detail-item"><span class="emoji">🌐</span> 오픈소스: DeepSeek R1이 전체 스택 수요 촉발</div>
+              <div class="cake-detail-item"><span class="emoji">🔬</span> 특화 모델: AlphaFold(단백질), 기상예측, 신소재</div>
+              <div class="cake-detail-item"><span class="emoji">📈</span> 임계점 돌파: 산업 활용 가능한 정확도 달성</div>
+              <div class="cake-detail-item"><span class="emoji">🇰🇷</span> 한국: 네이버(하이퍼클로바X), 업스테이지, 뤼튼</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Layer 3: Infrastructure -->
+      <div class="cake-layer l3" onclick="toggleCake(this)">
+        <div class="cake-num">3</div>
+        <div class="cake-body">
+          <div class="cake-eng" style="color:var(--layer3)">INFRASTRUCTURE — AI FACTORIES</div>
+          <div class="cake-name">🏗️ Infrastructure <span class="cake-kr" style="background:rgba(52,152,219,0.15);color:var(--layer3)">부동산금융 핵심</span></div>
+          <div class="cake-desc">데이터센터 = "AI 공장". 전력, 냉각, 네트워크가 지능을 생산하는 공장</div>
+          <div class="cake-detail">
+            <div class="cake-detail-inner">
+              <div class="cake-detail-item"><span class="emoji">🏭</span> 글로벌 DC 시장: 2026년 $3,500억, CAGR 25%+</div>
+              <div class="cake-detail-item"><span class="emoji">💰</span> 빅테크 CapEx: MS $800억, Google $750억, Meta $650억 (2025)</div>
+              <div class="cake-detail-item"><span class="emoji">🔌</span> 전력: 1GW급 캠퍼스 = 소도시 1개 전력</div>
+              <div class="cake-detail-item"><span class="emoji">📍</span> 입지: 전력 인프라 근접 > 도심 접근성</div>
+              <div class="cake-detail-item"><span class="emoji">🇰🇷</span> 한국: 네이버 춘천, KT/SKT IDC, 신규 PF 기회</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Layer 2: Chips -->
+      <div class="cake-layer l2" onclick="toggleCake(this)">
+        <div class="cake-num">2</div>
+        <div class="cake-body">
+          <div class="cake-eng" style="color:var(--layer2)">CHIPS — 에너지를 계산으로</div>
+          <div class="cake-name">🔧 Chips</div>
+          <div class="cake-desc">GPU/HBM이 에너지를 계산으로 변환. 병렬성·메모리·인터커넥트가 AI 속도를 결정</div>
+          <div class="cake-detail">
+            <div class="cake-detail-inner">
+              <div class="cake-detail-item"><span class="emoji">💎</span> NVIDIA: H200→B200→GB300. AI GPU 시장 점유율 80%+</div>
+              <div class="cake-detail-item"><span class="emoji">🧊</span> HBM: SK하이닉스 HBM3E/HBM4 — 시장 점유율 50%+</div>
+              <div class="cake-detail-item"><span class="emoji">⚔️</span> TSMC vs 삼성: 3nm→2nm 파운드리 경쟁</div>
+              <div class="cake-detail-item"><span class="emoji">📊</span> AI 반도체 시장: 2026년 $3,000억 전망</div>
+              <div class="cake-detail-item"><span class="emoji">🇰🇷</span> 한국: SK하이닉스, 삼성전자, 한미반도체, ISC</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Layer 1: Energy (bottom) -->
+      <div class="cake-layer l1" onclick="toggleCake(this)">
+        <div class="cake-num">1</div>
+        <div class="cake-body">
+          <div class="cake-eng" style="color:var(--layer1)">ENERGY — 모든 것의 근본</div>
+          <div class="cake-name">⚡ Energy</div>
+          <div class="cake-desc">AI 지능 생산의 물리적 한계 = 전력. 에너지가 AI 생산량의 천장을 결정</div>
+          <div class="cake-detail">
+            <div class="cake-detail-inner">
+              <div class="cake-detail-item"><span class="emoji">🔋</span> AI 전력 수요: 2030년까지 현재의 3-5배 증가 전망</div>
+              <div class="cake-detail-item"><span class="emoji">☢️</span> 원전 르네상스: MS-Three Mile Island, Google-Kairos, Amazon-Talen</div>
+              <div class="cake-detail-item"><span class="emoji">🔬</span> SMR: 소형모듈원자로 — 데이터센터 전용 전력</div>
+              <div class="cake-detail-item"><span class="emoji">🌱</span> 재생에너지: 태양광/풍력 + ESS 하이브리드</div>
+              <div class="cake-detail-item"><span class="emoji">🇰🇷</span> 한국: 한전, 두산에너빌리티, LS일렉트릭, HD현대일렉트릭</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUOTE -->
+  <div class="quote-box">
+    <div class="quote-text">"The more efficient AI becomes,<br>the more AI we will consume."</div>
+    <div class="quote-author">— JENSEN HUANG, NVIDIA CEO</div>
+  </div>
+
+  <!-- SECTION 3: JEVONS PARADOX -->
+  <div class="section">
+    <div class="section-label">JEVONS PARADOX</div>
+    <div class="section-title">효율 향상이 수요를 폭발시킨다</div>
+    <div class="jevons">
+      <div class="jevons-title">🔄 AI의 제번스 역설 — DeepSeek 사례</div>
+      <div class="jevons-flow">
+        <div class="jevons-step" style="background:rgba(139,92,246,0.2);color:var(--purple)">DeepSeek R1<br>오픈소스 공개</div>
+        <div class="jevons-arrow">→</div>
+        <div class="jevons-step" style="background:rgba(67,233,123,0.2);color:var(--green)">AI 접근성 ↑<br>비용 ↓</div>
+        <div class="jevons-arrow">→</div>
+        <div class="jevons-step" style="background:rgba(52,152,219,0.2);color:var(--blue)">앱 수요 폭증<br>더 많은 추론</div>
+        <div class="jevons-arrow">→</div>
+        <div class="jevons-step" style="background:rgba(243,156,18,0.2);color:var(--orange)">인프라·칩<br>수요 급증</div>
+        <div class="jevons-arrow">→</div>
+        <div class="jevons-step" style="background:rgba(231,76,60,0.2);color:var(--red)">에너지 수요<br>폭발</div>
+      </div>
+      <div style="font-size:0.8rem;color:var(--text-secondary);text-align:center">
+        역사적 선례: 증기기관 효율 ↑ → 석탄 소비 ↑ | 인터넷 속도 ↑ → 데이터 사용량 ↑ | LED 효율 ↑ → 조명 사용량 ↑
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: INVESTMENT MAP -->
+  <div class="section">
+    <div class="section-label">KOREA INVESTMENT MAP</div>
+    <div class="section-title">한국 기업 — Layer별 수혜주 매핑</div>
+    <div class="invest-grid">
+      <div class="invest-card" style="border-bottom:3px solid var(--layer1)">
+        <div class="invest-icon">⚡</div>
+        <div class="invest-layer" style="color:var(--layer1)">LAYER 1 · ENERGY</div>
+        <div class="invest-title">전력 인프라</div>
+        <div class="invest-stocks">한전<br>두산에너빌리티<br>LS일렉트릭<br>HD현대일렉트릭<br>일진전기</div>
+        <div class="invest-capex">변압기 수주 ↑</div>
+      </div>
+      <div class="invest-card" style="border-bottom:3px solid var(--layer2)">
+        <div class="invest-icon">🔧</div>
+        <div class="invest-layer" style="color:var(--layer2)">LAYER 2 · CHIPS</div>
+        <div class="invest-title">AI 반도체</div>
+        <div class="invest-stocks">SK하이닉스<br>삼성전자<br>한미반도체<br>ISC<br>리노공업</div>
+        <div class="invest-capex">HBM 독주</div>
+      </div>
+      <div class="invest-card" style="border-bottom:3px solid var(--layer3)">
+        <div class="invest-icon">🏗️</div>
+        <div class="invest-layer" style="color:var(--layer3)">LAYER 3 · INFRA</div>
+        <div class="invest-title">데이터센터</div>
+        <div class="invest-stocks">네이버<br>KT<br>SKT<br>효성중공업<br>서버/냉각주</div>
+        <div class="invest-capex">PF 기회 ↑</div>
+      </div>
+      <div class="invest-card" style="border-bottom:3px solid var(--layer4)">
+        <div class="invest-icon">🧠</div>
+        <div class="invest-layer" style="color:var(--layer4)">LAYER 4 · MODELS</div>
+        <div class="invest-title">AI 모델</div>
+        <div class="invest-stocks">네이버<br>카카오<br>업스테이지<br>뤼튼<br>(비상장多)</div>
+        <div class="invest-capex">빅테크 독식</div>
+      </div>
+      <div class="invest-card" style="border-bottom:3px solid var(--layer5)">
+        <div class="invest-icon">🚀</div>
+        <div class="invest-layer" style="color:var(--layer5)">LAYER 5 · APPS</div>
+        <div class="invest-title">AI 응용</div>
+        <div class="invest-stocks">현대차<br>한화에어로<br>삼성바이오<br>두산로보틱스<br>마크로젠</div>
+        <div class="invest-capex">초기 단계</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: DC = NEW LOGISTICS -->
+  <div class="section">
+    <div class="section-label">REAL ESTATE FINANCE PERSPECTIVE</div>
+    <div class="section-title">🏠 데이터센터 = "새로운 물류센터"</div>
+    <div class="dc-compare">
+      <div class="dc-card" style="border-top:3px solid var(--text-tertiary)">
+        <div class="dc-era" style="color:var(--text-tertiary)">2010-2020</div>
+        <div class="dc-title">📦 물류센터 PF 붐</div>
+        <div class="dc-item"><span>📈</span> 이커머스 폭발 → 물류센터 수요 급증</div>
+        <div class="dc-item"><span>🏗️</span> Cap Rate 5-7% → 기관 선호 자산</div>
+        <div class="dc-item"><span>📍</span> 교통 인프라 근접 입지가 핵심</div>
+        <div class="dc-item"><span>💰</span> 글로벌 물류 리츠 시총 $3,000억+</div>
+        <div class="dc-item"><span>🔑</span> 핵심 임차인: Amazon, 쿠팡, CJ</div>
+      </div>
+      <div class="dc-card" style="border-top:3px solid var(--gold)">
+        <div class="dc-era" style="color:var(--gold)">2025-2035</div>
+        <div class="dc-title" style="color:var(--gold)">🏭 데이터센터 PF 붐</div>
+        <div class="dc-item"><span>📈</span> AI 폭발 → 데이터센터 수요 급증</div>
+        <div class="dc-item"><span>🏗️</span> Cap Rate 4-6% → 최고 선호 자산</div>
+        <div class="dc-item"><span>📍</span> <strong style="color:var(--gold)">전력 인프라 근접 입지가 핵심</strong></div>
+        <div class="dc-item"><span>💰</span> 글로벌 DC 리츠 시총 $2,000억+ (성장중)</div>
+        <div class="dc-item"><span>🔑</span> 핵심 임차인: MS, Google, Meta, Oracle</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KEY INSIGHT -->
+  <div class="insight-box">
+    <div class="insight-title">🎯 조 전무님을 위한 핵심 액션아이템</div>
+    <div class="insight-text">
+      <strong>1. 부동산금융:</strong> 데이터센터 PF는 물류센터 PF의 데자뷔. 입지 선정 기준이 "교통"에서 "전력"으로 바뀔 뿐. 지금 파이프라인 확보하면 선점 효과.<br><br>
+      <strong>2. 투자:</strong> Layer 1-2(에너지+칩)는 이미 반영 중. Layer 3(인프라)가 다음 투자 사이클 — 건설/냉각/전력 장비주 주목.<br><br>
+      <strong>3. KAIST BDA:</strong> Layer 3 인프라에 블록체인 결합 = 분산 컴퓨팅 + RWA 토큰화. AI 인프라의 소유권을 토큰화하는 모델.<br><br>
+      <strong>4. PointnLine:</strong> "수조 달러 인프라 구축" = 역대급 PF/메자닌 딜 사이클. 이 흐름을 분석하는 도구를 가진 자가 이긴다.
+    </div>
+  </div>
+
+  <div class="watermark">PointnLine — Visual Intelligence · 2026.03.11 · Source: NVIDIA Blog</div>
+</div>
+
+<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">☀️</button>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById('themeBtn');
+  if (html.dataset.theme === 'dark') {
+    html.dataset.theme = 'light';
+    btn.textContent = '🌙';
+  } else {
+    html.dataset.theme = 'dark';
+    btn.textContent = '☀️';
+  }
+}
+
+function toggleCake(el) {
+  const detail = el.querySelector('.cake-detail');
+  const wasOpen = detail.classList.contains('open');
+  // Close all first
+  document.querySelectorAll('.cake-detail').forEach(d => d.classList.remove('open'));
+  if (!wasOpen) detail.classList.add('open');
+}
+</script>
+</body>
+</html>
